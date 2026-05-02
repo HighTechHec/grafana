@@ -1,9 +1,10 @@
 import { GENERAL_FOLDER_UID, TEAM_FOLDERS_UID } from 'app/features/search/constants';
-import { DashboardViewItem, DashboardViewItemKind } from 'app/features/search/types';
+import { type DashboardViewItem, type DashboardViewItemKind } from 'app/features/search/types';
 import { createAsyncThunk } from 'app/types/store';
 
-import { listDashboards, listFolders, listTeamFolders, PAGE_SIZE } from '../api/services';
-import { DashboardViewItemWithUIItems, UIDashboardViewItem } from '../types';
+import { PAGE_SIZE } from '../api/constants';
+import { listDashboards, listFolders, listTeamFolders } from '../api/services';
+import { type DashboardViewItemWithUIItems, type UIDashboardViewItem } from '../types';
 import { addTeamFolderPrefix, removeTeamFolderPrefix } from '../utils/dashboards';
 
 import { findItem } from './utils';
@@ -63,6 +64,13 @@ export const refreshParents = createAsyncThunk(
   }
 );
 
+/**
+ * Refetches children of a folder after changes that should be reflected in the redux state which is then rendered
+ * in the dashboard browse page.
+ *
+ * For this to work properly the requests have to be uncached themselves here so make sure any RTK query used here
+ * does not use builtin cache.
+ */
 export const refetchChildren = createAsyncThunk(
   'browseDashboards/refetchChildren',
   async ({ parentUID, pageSize }: RefetchChildrenArgs): Promise<RefetchChildrenResult> => {
